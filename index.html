@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<dialog id="addBook">
+    <div class="modalContainer">
+    <p>Add new book:</p>
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title">
+    <label for="author">Author:</label>
+    <input type="text" id="author" name="author">
+    <label for="pages">Pages:</label>
+    <input type="text" id="pages" name="pages">
+    <button id="submitBtn">Submit</button>
+    <button id="closeBtn">Close</button>
+    </div>
+</dialog>
+
+<div class="buttonContainer"><button id="addBookBtn">Add new book</button></div>
+<div id="bookContainer"></div>
+<script>
+
+    const myLibrary = [];
+    const addBookBtn = document.getElementById("addBookBtn");
+    const submitBtn = document.getElementById("submitBtn");
+    const addBook = document.getElementById("addBook");
+    const closeBtn = document.getElementById("closeBtn");
+    const bookContainer = document.getElementById("bookContainer");
+
+    addBookBtn.addEventListener("click", () => {
+        addBook.showModal();
+    })
+
+    function Book(title, author, pages) {
+        this.title = title;
+        this.author = author;
+        this.pages = pages;
+        this.read = false;
+    }
+
+    submitBtn.addEventListener("click", () => {
+
+        let title = document.getElementById('title').value;
+        let author = document.getElementById('author').value;
+        let pages = document.getElementById('pages').value;
+
+        let newBook = new Book(title, author, pages)
+        myLibrary.push(newBook);
+
+        document.getElementById('title').value = '';
+        document.getElementById('author').value = '';
+        document.getElementById('pages').value = '';
+        addBook.close();
+        showBooks();
+    })
+
+    closeBtn.addEventListener("click", () => {
+        addBook.close();
+    })
+
+    function showBooks() {
+        bookContainer.innerHTML = ''; // Clear existing content
+        myLibrary.forEach((book, index) => {
+            createBookCard(book, index);
+        });
+    }
+
+    function createBookCard(book, index) {
+        const cardDiv = document.createElement('div');
+        cardDiv.className = `Card Book${index}`;
+
+        // Create a title div, set its class and content
+        const titleDiv = document.createElement('div');
+        titleDiv.className = `Title Book${index}`;
+        titleDiv.textContent = `Title: ${book.title}`;
+
+        // Create an author div, set its class and content
+        const authorDiv = document.createElement('div');
+        authorDiv.className = `Author Book${index}`;
+        authorDiv.textContent = `Author: ${book.author}`;
+
+        // Create a pages div, set its class and content
+        const pagesDiv = document.createElement('div');
+        pagesDiv.className = `Pages Book${index}`;
+        pagesDiv.textContent = `Pages: ${book.pages}`;
+
+        cardDiv.appendChild(titleDiv);
+        cardDiv.appendChild(authorDiv);
+        cardDiv.appendChild(pagesDiv);
+
+        // Read status button
+        const readStatusBtn = document.createElement('button');
+        readStatusBtn.className = `read-status-button`;
+        readStatusBtn.textContent = book.read ? 'Read' : 'Not Read';
+        readStatusBtn.addEventListener("click", () => {
+            book.read = !book.read;
+            readStatusBtn.textContent = book.read ? 'Read' : 'Not Read';
+        });
+        cardDiv.appendChild(readStatusBtn);
+
+        // Delete button
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = `delete-button`;
+        deleteBtn.textContent = 'X';
+        deleteBtn.addEventListener("click", () => {
+            myLibrary.splice(index, 1);
+            showBooks(); // Refresh the book list
+        });
+        cardDiv.appendChild(deleteBtn);
+
+        bookContainer.appendChild(cardDiv);
+    }
+</script>
+</body>
+</html>
